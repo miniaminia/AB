@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>모바일 AB 테스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            background: #F8F9FA;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        /* 팀 입력 화면 */
+        .team-input-screen {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .team-input-screen h1 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 12px;
+        }
+
+        .team-input-screen p {
+            font-size: 16px;
+            color: #6B7280;
+            margin-bottom: 40px;
+        }
+
+        .team-input-form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .team-input-form input {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 18px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            transition: all 0.3s;
+        }
+
+        .team-input-form input:focus {
+            outline: none;
+            border-color: #4A90E2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .btn {
+            padding: 16px 32px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #4A90E2;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: #357ABD;
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #6B7280;
+            border: 2px solid #E5E7EB;
+            margin-top: 12px;
+        }
+
+        .btn-secondary:hover {
+            border-color: #4A90E2;
+            color: #4A90E2;
+        }
+
+        /* 메인 화면 */
+        .main-screen {
+            display: none;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid #F0F0F0;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 8px;
+        }
+
+        .header .team-name {
+            font-size: 20px;
+            color: #4A90E2;
+            font-weight: 600;
+        }
+
+        .header .subtitle {
+            font-size: 16px;
+            color: #6B7280;
+            margin-top: 8px;
+        }
+
+        .live-indicator {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #F0FDF4;
+            border: 1px solid #86EFAC;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #16A34A;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #22C55E;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* 이미지 업로드 섹션 */
+        .upload-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            margin-bottom: 48px;
+        }
+
+        .upload-box {
+            text-align: center;
+        }
+
+        .upload-box h3 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .upload-box.option-a h3 {
+            color: #4A90E2;
+        }
+
+        .upload-box.option-b h3 {
+            color: #50C878;
+        }
+
+        .upload-area {
+            width: 100%;
+            max-width: 375px;
+            height: 812px;
+            margin: 0 auto;
+            border: 3px dashed #CCCCCC;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #FAFAFA;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area:hover {
+            border-color: #4A90E2;
+            background: #F5F9FF;
+        }
+
+        .upload-area.has-image {
+            border-style: solid;
+            border-width: 2px;
+            padding: 0;
+        }
+
+        .upload-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .upload-placeholder {
+            pointer-events: none;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .upload-text {
+            font-size: 16px;
+            color: #6B7280;
+            margin-bottom: 8px;
+        }
+
+        .upload-hint {
+            font-size: 14px;
+            color: #9CA3AF;
+        }
+
+        .change-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .change-btn:hover {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        /* 투표 버튼 */
+        .vote-btn {
+            width: 100%;
+            max-width: 375px;
+            margin: 16px auto 0;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+        }
+
+        .vote-btn.vote-a {
+            background: #4A90E2;
+            color: white;
+        }
+
+        .vote-btn.vote-b {
+            background: #50C878;
+            color: white;
+        }
+
+        .vote-btn:hover:not(:disabled) {
+            transform: scale(1.03);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+
+        .vote-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* 결과 섹션 */
+        .results-section {
+            margin-top: 48px;
+            padding: 32px;
+            background: #F8F9FA;
+            border-radius: 12px;
+        }
+
+        .results-section h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .result-bar {
+            margin-bottom: 24px;
+        }
+
+        .result-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .result-label.option-a {
+            color: #4A90E2;
+        }
+
+        .result-label.option-b {
+            color: #50C878;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 40px;
+            background: #E5E7EB;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 12px;
+            font-weight: 700;
+            color: white;
+            font-size: 16px;
+        }
+
+        .progress-fill.fill-a {
+            background: linear-gradient(90deg, #4A90E2 0%, #6BB6FF 100%);
+        }
+
+        .progress-fill.fill-b {
+            background: linear-gradient(90deg, #50C878 0%, #7FE5A8 100%);
+        }
+
+        .total-votes {
+            text-align: center;
+            font-size: 18px;
+            color: #6B7280;
+            margin-top: 24px;
+            font-weight: 600;
+        }
+
+        /* 투표 이유 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-content h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1A1A1A;
+        }
+
+        .modal-content p {
+            font-size: 14px;
+            color: #6B7280;
+            margin-bottom: 20px;
+        }
+
+        .modal-content textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            resize: vertical;
+            min-height: 100px;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            margin-bottom: 16px;
+        }
+
+        .modal-content textarea:focus {
+            outline: none;
+            border-color: #4A90E2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-submit {
+            background: #4A90E2;
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background: #357ABD;
+        }
+
+        .btn-cancel {
+            background: #F3F4F6;
+            color: #6B7280;
+        }
+
+        .btn-cancel:hover {
+            background: #E5E7EB;
+        }
+
+        /* 선택 이유 목록 */
+        .reasons-section {
+            margin-top: 32px;
+            padding: 24px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #F0F0F0;
+        }
+
+        .reasons-section h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #1A1A1A;
+        }
+
+        .reasons-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .reason-column h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #F0F0F0;
+        }
+
+        .reason-column.option-a h4 {
+            color: #4A90E2;
+        }
+
+        .reason-column.option-b h4 {
+            color: #50C878;
+        }
+
+        .reason-item {
+            padding: 12px;
+            background: #F8F9FA;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #374151;
+            line-height: 1.5;
+        }
+
+        .reason-time {
+            font-size: 12px;
+            color: #9CA3AF;
+            margin-top: 4px;
+        }
+
+        .no-reasons {
+            color: #9CA3AF;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        /* 액션 버튼 */
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        .btn-outline {
+            padding: 12px 24px;
+            background: white;
+            border: 2px solid #E5E7EB;
+            color: #6B7280;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-outline:hover {
+            border-color: #4A90E2;
+            color: #4A90E2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        /* 반응형 */
+        @media (max-width: 1024px) {
+            .upload-section {
+                gap: 32px;
+            }
+
+            .upload-area {
+                max-width: 300px;
+                height: 650px;
+            }
+
+            .vote-btn {
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 24px;
+            }
+
+            .upload-section {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .upload-area {
+                max-width: 375px;
+                height: 812px;
+            }
+
+            .vote-btn {
+                max-width: 375px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .reasons-columns {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 24px;
+            }
+
+            .live-indicator {
+                position: static;
+                display: inline-flex;
+                margin-top: 12px;
+            }
+        }
+
+        /* 로딩 & 알림 */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6B7280;
+        }
+
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .alert.success {
+            border-left: 4px solid #50C878;
+        }
+
+        .alert.error {
+            border-left: 4px solid #EF4444;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .password-input {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .password-input input {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .security-note {
+            margin-top: 32px;
+            padding: 16px;
+            background: #FEF3C7;
+            border: 1px solid #FCD34D;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #92400E;
+        }
+
+        .security-note strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 팀 이름 입력 화면 -->
+        <div id="teamInputScreen" class="team-input-screen">
+            <h1>📱 모바일 AB 테스트</h1>
+            <p>팀 이름과 비밀번호를 입력하세요</p>
+            
+            <div class="team-input-form">
+                <input 
+                    type="text" 
+                    id="teamNameInput" 
+                    placeholder="팀 이름 (예: A팀, 디자인팀)"
+                    autocomplete="off"
+                />
+                <input 
+                    type="password" 
+                    id="passwordInput" 
+                    placeholder="비밀번호 (4자리 이상)"
+                    autocomplete="off"
+                />
+                <button class="btn btn-primary" onclick="startTest()">시작하기</button>
+                
+                <div class="security-note">
+                    <strong>🔒 보안 안내</strong>
+                    비밀번호는 팀 데이터 보호를 위해 사용됩니다. 팀원들과 공유하세요!
+                </div>
+            </div>
+        </div>
+
+        <!-- 메인 테스트 화면 -->
+        <div id="mainScreen" class="main-screen">
+            <div class="header">
+                <div class="live-indicator">
+                    <div class="live-dot"></div>
+                    실시간 동기화
+                </div>
+                <h1>모바일 AB 테스트</h1>
+                <div class="team-name">팀: <span id="displayTeamName"></span></div>
+                <div class="subtitle">두 개의 모바일 스크린샷을 비교하고 투표하세요</div>
+            </div>
+
+            <div class="upload-section">
+                <!-- 옵션 A -->
+                <div class="upload-box option-a">
+                    <h3>📱 화면 A</h3>
+                    <div class="upload-area" id="uploadAreaA" onclick="document.getElementById('fileInputA').click()">
+                        <div class="upload-placeholder">
+                            <div class="upload-icon">☁️</div>
+                            <div class="upload-text">클릭하거나 드래그하여 업로드</div>
+                            <div class="upload-hint">PNG, JPG (최대 2MB)</div>
+                        </div>
+                    </div>
+                    <input type="file" id="fileInputA" accept="image/*" onchange="handleImageUpload('A', this)">
+                    <button class="vote-btn vote-a" id="voteButtonA" onclick="vote('A')" disabled>화면 A에 투표</button>
+                </div>
+
+                <!-- 옵션 B -->
+                <div class="upload-box option-b">
+                    <h3>📱 화면 B</h3>
+                    <div class="upload-area" id="uploadAreaB" onclick="document.getElementById('fileInputB').click()">
+                        <div class="upload-placeholder">
+                            <div class="upload-icon">☁️</div>
+                            <div class="upload-text">클릭하거나 드래그하여 업로드</div>
+                            <div class="upload-hint">PNG, JPG (최대 2MB)</div>
+                        </div>
+                    </div>
+                    <input type="file" id="fileInputB" accept="image/*" onchange="handleImageUpload('B', this)">
+                    <button class="vote-btn vote-b" id="voteButtonB" onclick="vote('B')" disabled>화면 B에 투표</button>
+                </div>
+            </div>
+
+            <!-- 결과 섹션 -->
+            <div class="results-section">
+                <h2>📊 실시간 결과</h2>
+                
+                <div class="result-bar">
+                    <div class="result-label option-a">
+                        <span>화면 A</span>
+                        <span id="votesA">0표</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill fill-a" id="progressA" style="width: 0%">
+                            <span id="percentA">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-bar">
+                    <div class="result-label option-b">
+                        <span>화면 B</span>
+                        <span id="votesB">0표</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill fill-b" id="progressB" style="width: 0%">
+                            <span id="percentB">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="total-votes">총 투표: <span id="totalVotes">0</span>표</div>
+            </div>
+
+            <!-- 선택 이유 섹션 -->
+            <div class="reasons-section" id="reasonsSection" style="display: none;">
+                <h3>💭 선택 이유</h3>
+                <div class="reasons-columns">
+                    <div class="reason-column option-a">
+                        <h4>화면 A를 선택한 이유 (<span id="reasonCountA">0</span>)</h4>
+                        <div id="reasonsListA">
+                            <div class="no-reasons">아직 의견이 없습니다</div>
+                        </div>
+                    </div>
+                    <div class="reason-column option-b">
+                        <h4>화면 B를 선택한 이유 (<span id="reasonCountB">0</span>)</h4>
+                        <div id="reasonsListB">
+                            <div class="no-reasons">아직 의견이 없습니다</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 액션 버튼 -->
+            <div class="actions">
+                <button class="btn-outline" onclick="shareTest()">🔗 공유 링크 복사</button>
+                <button class="btn-outline" onclick="resetVotes()">🔄 투표 초기화</button>
+                <button class="btn-outline" onclick="newTest()">✨ 새 테스트</button>
+            </div>
+        </div>
+
+        <!-- 투표 이유 입력 모달 -->
+        <div id="voteModal" class="modal">
+            <div class="modal-content">
+                <h3 id="modalTitle">화면 A를 선택하시는 이유는?</h3>
+                <p>다른 사람들과 의견을 공유해주세요 (선택사항)</p>
+                <textarea id="voteReason" placeholder="예: 색상이 더 눈에 띄어요, 레이아웃이 깔끔해요, 버튼이 더 명확해요 등"></textarea>
+                <div class="modal-buttons">
+                    <button class="btn-cancel" onclick="closeModal()">취소</button>
+                    <button class="btn-submit" onclick="submitVote()">투표하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, get, onValue, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // ⚠️ Firebase 설정 - 여기에 본인의 Firebase 설정을 넣으세요
+        const firebaseConfig = {
+            apiKey: "AIzaSyCcuJ3BUxkJ0WDPymEzVgi3qfEhLIWgWII",
+            authDomain: "mint-ab.firebaseapp.com",
+            projectId: "mint-ab",
+            storageBucket: "mint-ab.firebasestorage.app",
+            messagingSenderId: "604665484152",
+            appId: "1:604665484152:web:faf21ffd983706657dae8d",
+            measurementId: "G-PW7LJP7W73"
+            };
+
+        // Firebase 초기화
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // 전역 변수
+        window.db = database;
+        window.dbRef = ref;
+        window.dbSet = set;
+        window.dbGet = get;
+        window.dbOnValue = onValue;
+        window.dbUpdate = update;
+    </script>
+
+    <script>
+        let currentTeam = '';
+        let currentPassword = '';
+        let selectedOption = null;
+        let hasVoted = false;
+        let userVoteId = null;
+
+        // 사용자 고유 ID 생성 (한 번만 투표하도록)
+        function getUserId() {
+            let userId = localStorage.getItem('userId');
+            if (!userId) {
+                userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('userId', userId);
+            }
+            return userId;
+        }
+
+        // SHA-256 해시 (비밀번호 검증용)
+        async function hashPassword(password) {
+            const msgBuffer = new TextEncoder().encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // 초기화
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const teamFromUrl = urlParams.get('team');
+            
+            if (teamFromUrl) {
+                document.getElementById('teamNameInput').value = teamFromUrl;
+            }
+
+            userVoteId = getUserId();
+        });
+
+        // 팀 이름 입력 후 시작
+        async function startTest() {
+            const teamName = document.getElementById('teamNameInput').value.trim();
+            const password = document.getElementById('passwordInput').value;
+            
+            if (!teamName) {
+                alert('팀 이름을 입력해주세요!');
+                return;
+            }
+
+            if (password.length < 4) {
+                alert('비밀번호는 4자리 이상 입력해주세요!');
+                return;
+            }
+
+            currentTeam = teamName;
+            currentPassword = password;
+
+            try {
+                // 입력 검증 (XSS 방지)
+                const sanitizedTeam = teamName.replace(/[<>\"\']/g, '');
+                if (sanitizedTeam !== teamName) {
+                    alert('팀 이름에 특수문자를 사용할 수 없습니다.');
+                    return;
+                }
+
+                const teamRef = window.dbRef(window.db, `teams/${encodeURIComponent(teamName)}`);
+                const snapshot = await window.dbGet(teamRef);
+                
+                const hashedPassword = await hashPassword(password);
+
+                if (snapshot.exists()) {
+                    // 기존 팀 - 비밀번호 확인
+                    const data = snapshot.val();
+                    if (data.password !== hashedPassword) {
+                        alert('비밀번호가 일치하지 않습니다!');
+                        return;
+                    }
+                    
+                    // 해당 사용자가 이미 투표했는지 확인
+                    if (data.voters && data.voters[userVoteId]) {
+                        hasVoted = true;
+                    }
+                    
+                    loadExistingTest(data);
+                } else {
+                    // 새 팀 생성
+                    const newTeam = {
+                        teamName: sanitizedTeam,
+                        password: hashedPassword,
+                        imageA: null,
+                        imageB: null,
+                        votesA: 0,
+                        votesB: 0,
+                        reasonsA: {},
+                        reasonsB: {},
+                        voters: {},
+                        createdAt: new Date().toISOString()
+                    };
+                    
+                    await window.dbSet(teamRef, newTeam);
+                }
+
+                // 실시간 업데이트 리스너 시작
+                startRealtimeListener();
+
+                // 화면 전환
+                document.getElementById('teamInputScreen').style.display = 'none';
+                document.getElementById('mainScreen').style.display = 'block';
+                document.getElementById('displayTeamName').textContent = sanitizedTeam;
+
+            } catch (error) {
+                console.error('에러:', error);
+                alert('연결에 실패했습니다. Firebase 설정을 확인해주세요.');
+            }
+        }
+
+        // 실시간 리스너
+        function startRealtimeListener() {
+            const teamRef = window.dbRef(window.db, `teams/${encodeURIComponent(currentTeam)}`);
+            
+            window.dbOnValue(teamRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    updateUIFromData(data);
+                }
+            });
+        }
+
+        // 기존 테스트 로드
+        function loadExistingTest(data) {
+            if (data.imageA) {
+                displayImage('A', data.imageA);
+            }
+            if (data.imageB) {
+                displayImage('B', data.imageB);
+            }
+            updateVoteButtons();
+        }
+
+        // 데이터로 UI 업데이트
+        function updateUIFromData(data) {
+            // 이미지 표시
+            if (data.imageA) displayImage('A', data.imageA);
+            if (data.imageB) displayImage('B', data.imageB);
+
+            // 투표 결과 업데이트
+            const votesA = data.votesA || 0;
+            const votesB = data.votesB || 0;
+            const total = votesA + votesB;
+            const percentA = total > 0 ? Math.round((votesA / total) * 100) : 0;
+            const percentB = total > 0 ? Math.round((votesB / total) * 100) : 0;
+
+            document.getElementById('votesA').textContent = `${votesA}표`;
+            document.getElementById('votesB').textContent = `${votesB}표`;
+            document.getElementById('totalVotes').textContent = total;
+            
+            document.getElementById('progressA').style.width = `${percentA}%`;
+            document.getElementById('progressB').style.width = `${percentB}%`;
+            
+            document.getElementById('percentA').textContent = `${percentA}%`;
+            document.getElementById('percentB').textContent = `${percentB}%`;
+
+            // 선택 이유 업데이트
+            updateReasonsDisplay(data.reasonsA || {}, data.reasonsB || {});
+
+            // 투표 버튼 상태 업데이트
+            if (data.voters && data.voters[userVoteId]) {
+                hasVoted = true;
+            }
+            updateVoteButtons();
+        }
+
+        // 이미지 표시
+        function displayImage(option, imageData) {
+            const area = document.getElementById(`uploadArea${option}`);
+            area.innerHTML = `
+                <img src="${escapeHtml(imageData)}" alt="화면 ${option}">
+                <button class="change-btn" onclick="event.stopPropagation(); document.getElementById('fileInput${option}').click()">변경</button>
+            `;
+            area.classList.add('has-image');
+        }
+
+        // 이미지 업로드
+        async function handleImageUpload(option, input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // 파일 크기 체크 (2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('파일 크기는 2MB 이하여야 합니다.');
+                return;
+            }
+
+            // 이미지 타입 체크
+            if (!file.type.startsWith('image/')) {
+                alert('이미지 파일만 업로드 가능합니다.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64Image = e.target.result;
+                
+                try {
+                    const teamRef = window.dbRef(window.db, `teams/${encodeURIComponent(currentTeam)}`);
+                    const updateData = {};
+                    updateData[`image${option}`] = base64Image;
+                    
+                    await window.dbUpdate(teamRef, updateData);
+                    showAlert('이미지가 업로드되었습니다!', 'success');
+                } catch (error) {
+                    console.error('업로드 에러:', error);
+                    showAlert('업로드에 실패했습니다.', 'error');
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        // 투표 버튼 활성화 체크
+        function updateVoteButtons() {
+            const buttonA = document.getElementById('voteButtonA');
+            const buttonB = document.getElementById('voteButtonB');
+            
+            buttonA.disabled = hasVoted;
+            buttonB.disabled = hasVoted;
+        }
+
+        // 투표하기 - 모달 열기
+        function vote(option) {
+            if (hasVoted) {
+                alert('이미 투표하셨습니다!');
+                return;
+            }
+
+            selectedOption = option;
+            const modal = document.getElementById('voteModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalContent = modal.querySelector('.modal-content');
+            
+            modalTitle.textContent = `화면 ${option}를 선택하시는 이유는?`;
+            
+            if (option === 'A') {
+                modalContent.style.borderTop = '4px solid #4A90E2';
+            } else {
+                modalContent.style.borderTop = '4px solid #50C878';
+            }
+            
+            document.getElementById('voteReason').value = '';
+            modal.classList.add('show');
+        }
+
+        // 모달 닫기
+        function closeModal() {
+            document.getElementById('voteModal').classList.remove('show');
+            selectedOption = null;
+        }
+
+        // 투표 제출
+        async function submitVote() {
+            const reason = document.getElementById('voteReason').value.trim();
+            
+            // XSS 방지
+            const sanitizedReason = reason.replace(/[<>\"\']/g, '');
+            
+            try {
+                const teamRef = window.dbRef(window.db, `teams/${encodeURIComponent(currentTeam)}`);
+                const snapshot = await window.dbGet(teamRef);
+                const data = snapshot.val();
+
+                const updateData = {};
+                
+                if (selectedOption === 'A') {
+                    updateData.votesA = (data.votesA || 0) + 1;
+                    if (sanitizedReason) {
+                        const reasonKey = `reason_${Date.now()}`;
+                        updateData[`reasonsA/${reasonKey}`] = {
+                            text: sanitizedReason,
+                            timestamp: new Date().toISOString()
+                        };
+                    }
+                } else {
+                    updateData.votesB = (data.votesB || 0) + 1;
+                    if (sanitizedReason) {
+                        const reasonKey = `reason_${Date.now()}`;
+                        updateData[`reasonsB/${reasonKey}`] = {
+                            text: sanitizedReason,
+                            timestamp: new Date().toISOString()
+                        };
+                    }
+                }
+
+                // 투표자 기록
+                updateData[`voters/${userVoteId}`] = {
+                    option: selectedOption,
+                    timestamp: new Date().toISOString()
+                };
+
+                await window.dbUpdate(teamRef, updateData);
+                
+                hasVoted = true;
+                closeModal();
+                showAlert(`화면 ${selectedOption}에 투표되었습니다!`, 'success');
+                
+            } catch (error) {
+                console.error('투표 에러:', error);
+                showAlert('투표에 실패했습니다.', 'error');
+            }
+        }
+
+        // 선택 이유 표시
+        function updateReasonsDisplay(reasonsA, reasonsB) {
+            const reasonsSection = document.getElementById('reasonsSection');
+            const reasonsAArray = Object.values(reasonsA || {});
+            const reasonsBArray = Object.values(reasonsB || {});
+            
+            const hasReasons = reasonsAArray.length > 0 || reasonsBArray.length > 0;
+            reasonsSection.style.display = hasReasons ? 'block' : 'none';
+            
+            // 화면 A 이유
+            const reasonsListA = document.getElementById('reasonsListA');
+            document.getElementById('reasonCountA').textContent = reasonsAArray.length;
+            
+            if (reasonsAArray.length > 0) {
+                reasonsListA.innerHTML = reasonsAArray
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                    .map(reason => `
+                        <div class="reason-item">
+                            ${escapeHtml(reason.text)}
+                            <div class="reason-time">${formatTime(reason.timestamp)}</div>
+                        </div>
+                    `)
+                    .join('');
+            } else {
+                reasonsListA.innerHTML = '<div class="no-reasons">아직 의견이 없습니다</div>';
+            }
+            
+            // 화면 B 이유
+            const reasonsListB = document.getElementById('reasonsListB');
+            document.getElementById('reasonCountB').textContent = reasonsBArray.length;
+            
+            if (reasonsBArray.length > 0) {
+                reasonsListB.innerHTML = reasonsBArray
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                    .map(reason => `
+                        <div class="reason-item">
+                            ${escapeHtml(reason.text)}
+                            <div class="reason-time">${formatTime(reason.timestamp)}</div>
+                        </div>
+                    `)
+                    .join('');
+            } else {
+                reasonsListB.innerHTML = '<div class="no-reasons">아직 의견이 없습니다</div>';
+            }
+        }
+
+        // 시간 포맷
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return '방금 전';
+            if (minutes < 60) return `${minutes}분 전`;
+            if (hours < 24) return `${hours}시간 전`;
+            return `${days}일 전`;
+        }
+
+        // HTML 이스케이프 (XSS 방지)
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 공유 링크 복사
+        function shareTest() {
+            const url = `${window.location.origin}${window.location.pathname}?team=${encodeURIComponent(currentTeam)}`;
+            
+            navigator.clipboard.writeText(url).then(() => {
+                showAlert('공유 링크가 복사되었습니다!', 'success');
+            }).catch(err => {
+                alert('링크 복사에 실패했습니다.');
+            });
+        }
+
+        // 투표 초기화
+        async function resetVotes() {
+            const password = prompt('투표를 초기화하려면 비밀번호를 입력하세요:');
+            if (!password) return;
+
+            try {
+                const hashedPassword = await hashPassword(password);
+                const teamRef = window.dbRef(window.db, `teams/${encodeURIComponent(currentTeam)}`);
+                const snapshot = await window.dbGet(teamRef);
+                const data = snapshot.val();
+
+                if (data.password !== hashedPassword) {
+                    alert('비밀번호가 일치하지 않습니다!');
+                    return;
+                }
+
+                if (confirm('투표 결과를 초기화하시겠습니까? (선택 이유도 모두 삭제됩니다)')) {
+                    await window.dbUpdate(teamRef, {
+                        votesA: 0,
+                        votesB: 0,
+                        reasonsA: {},
+                        reasonsB: {},
+                        voters: {}
+                    });
+                    
+                    hasVoted = false;
+                    showAlert('투표가 초기화되었습니다!', 'success');
+                }
+            } catch (error) {
+                console.error('초기화 에러:', error);
+                showAlert('초기화에 실패했습니다.', 'error');
+            }
+        }
+
+        // 새 테스트
+        function newTest() {
+            if (confirm('새 테스트를 시작하시겠습니까?')) {
+                location.reload();
+            }
+        }
+
+        // 알림 표시
+        function showAlert(message, type = 'success') {
+            const alert = document.createElement('div');
+            alert.className = `alert ${type}`;
+            alert.textContent = message;
+            document.body.appendChild(alert);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+        }
+
+        // 모달 배경 클릭시 닫기
+        document.getElementById('voteModal').addEventListener('click', (e) => {
+            if (e.target.id === 'voteModal') {
+                closeModal();
+            }
+        });
+
+        // Enter 키로 시작하기
+        document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                startTest();
+            }
+        });
+    </script>
+</body>
+</html>
